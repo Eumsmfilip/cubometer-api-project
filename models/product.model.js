@@ -5,6 +5,10 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true,
     },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -48,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   });
-  
+
   module.exports = Product;
   return Product;
 };

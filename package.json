@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "migration:create": "npx sequelize-cli migration:create",
+    "migrate": "env-cmd npx sequelize-cli db:migrate", 
+    "migrate:rollback": "env-cmd npx sequelize-cli db:migrate:undo"
   },
   "keywords": [],
   "author": "",
