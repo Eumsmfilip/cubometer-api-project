@@ -48,6 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   });
-
-  return Product, (module.exports = Product);
+  
+  module.exports = Product;
+  return Product;
 };
