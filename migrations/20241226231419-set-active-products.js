@@ -2,18 +2,18 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    await queryInterface.addColumn('cubometer_api', 'active', {
-      type: Sequelize.DataTypes.BOOLEAN,
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.addColumn('Products', 'active', {
+      type: Sequelize.BOOLEAN,
       defaultValue: true,
-      allowNull: false
+      allowNull: false,
     });
 
-    await queryInterface.sequelize.query('UPDATE cubometer_api SET active = true');
-
+    // Optional: Set the default value for existing records
+    await queryInterface.sequelize.query('UPDATE Products SET active = true');
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.removeColumn('cubometer_api', 'active');
-  }
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.removeColumn('Products', 'active');
+  },
 };
