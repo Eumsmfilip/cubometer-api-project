@@ -5,7 +5,6 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true,
     },
-
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -13,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-
     gtin13: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -21,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-
     length: {
       type: DataTypes.DOUBLE,
       allowNull: false,
@@ -29,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-
     width: {
       type: DataTypes.DOUBLE,
       allowNull: false,
@@ -37,7 +33,6 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-
     height: {
       type: DataTypes.DOUBLE,
       allowNull: false,
@@ -45,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true,
       },
     },
-
     weight: {
       type: DataTypes.DOUBLE,
       allowNull: false,
@@ -55,5 +49,5 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
-  return Product;
+  return Product, (module.exports = Product);
 };
