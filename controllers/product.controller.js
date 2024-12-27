@@ -45,6 +45,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// Method to delete a product from Database.
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -59,10 +60,31 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const inactivateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+    if (!product.active) {
+      return res
+        .status(403)
+        .json({ message: "Product is not active and cannot be deleted." });
+    }
+    product.active = false;
+    await product.save();
+    res.status(200).json({ message: "Product inactivated." });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
+  inactivateProduct,
   deleteProduct,
 };
