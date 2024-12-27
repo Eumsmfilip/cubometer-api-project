@@ -20,6 +20,6 @@ router.put("/:id", updateProduct);
 
 router.put("/:id", inactivateProduct);
 
-router.delete("/:id", deleteProduct);
+router.delete("/dev/:id", deleteProduct);
 
 module.exports = router;
