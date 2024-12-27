@@ -45,6 +45,58 @@ const updateProduct = async (req, res) => {
   }
 };
 
+const updateProductDimensions = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { length, width, height } = req.body;
+
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    const currentVolume = product.length * product.width * product.height;
+    const newVolume = length * width * height;
+
+    const productBeforeUpdate = {
+      length: product.length,
+      width: product.width,
+      height: product.height,
+    };
+
+    if (currentVolume == null || newVolume == null) {
+      product.length = length;
+      product.width = width;
+      product.height = height;
+
+      product.save();
+      res.status(200).json({ message: "Product's dimension saved successfully." });
+    }
+
+    if (currentVolume !== newVolume) {
+      product.length = length;
+      product.width = width;
+      product.height = height;
+
+      await product.save();
+      res.status(200).json({
+        message: `Product's dimensions updated from: 
+        Length: ${productBeforeUpdate.length}
+        Width: ${productBeforeUpdate.width}
+        Height: ${productBeforeUpdate.height}
+        To: 
+        Length: ${product.length}
+        Width: ${product.width}
+        Height: ${product.height}`,
+      });
+    } else {
+      return res.status(400).json({ message: "The volume has not changed." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Method to delete a product from Database.
 const deleteProduct = async (req, res) => {
   try {
@@ -85,6 +137,7 @@ module.exports = {
   getProductById,
   createProduct,
   updateProduct,
+  updateProductDimensions,
   inactivateProduct,
   deleteProduct,
 };
