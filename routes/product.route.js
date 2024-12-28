@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   getProducts,
   getProductById,
+  getProductByGtin,
   createProduct,
   updateProduct,
   updateProductDimensions,
@@ -13,15 +14,17 @@ const {
 
 router.get("/", getProducts);
 
-router.get("/:id", getProductById);
+router.get("/dev/:id", getProductById);
+
+router.get("/:gtin13", getProductByGtin);
 
 router.post("/", createProduct);
 
-router.put("/:id", updateProduct);
+router.put("/update/:gtin13", updateProduct);
 
-router.put("/dimensions/:id", updateProductDimensions);
+router.put("/dimensions/:gtin13", updateProductDimensions);
 
-router.put("/:id", inactivateProduct);
+router.put("/inactivate/:gtin13", inactivateProduct);
 
 router.delete("/dev/:id", deleteProduct);
 
