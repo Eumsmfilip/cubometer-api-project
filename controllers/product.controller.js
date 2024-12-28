@@ -14,10 +14,28 @@ const getProducts = async (req, res) => {
   }
 };
 
+// Method get product by ID { Only for DEV purposes }
 const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
     const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+    res.status(200).json({ product });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getProductByGtin = async (req, res) => {
+  try {
+    const { gtin13 } = req.params;
+    const product = await Product.findAll({
+      where: {
+        gtin13: gtin13,
+      },
+    });
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
@@ -38,8 +56,12 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { id } = req.params;
-    const product = await Product.findByPk(id);
+    const { gtin13 } = req.params;
+    const product = await Product.findOne({
+      where: {
+        gtin13: gtin13,
+      },
+    });
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
@@ -52,10 +74,14 @@ const updateProduct = async (req, res) => {
 
 const updateProductDimensions = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { gtin13 } = req.params;
     const { length, width, height } = req.body;
 
-    const product = await Product.findByPk(id);
+    const product = await Product.findOne({
+      where: {
+        gtin13: gtin13,
+      },
+    });
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
@@ -97,7 +123,7 @@ const updateProductDimensions = async (req, res) => {
   }
 };
 
-// Method to delete a product from Database.
+// Method to delete a product from Database { Only for DEV purposes }.
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -114,8 +140,12 @@ const deleteProduct = async (req, res) => {
 
 const inactivateProduct = async (req, res) => {
   try {
-    const { id } = req.params;
-    const product = await Product.findByPk(id);
+    const { gtin13 } = req.params;
+    const product = await Product.findOne({
+      where: {
+        gtin13: gtin13,
+      },
+    });
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
@@ -127,6 +157,7 @@ const inactivateProduct = async (req, res) => {
     product.active = false;
     await product.save();
     res.status(200).json({ message: "Product inactivated." });
+    console.log(product.active)
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -135,6 +166,7 @@ const inactivateProduct = async (req, res) => {
 module.exports = {
   getProducts,
   getProductById,
+  getProductByGtin,
   createProduct,
   updateProduct,
   updateProductDimensions,
