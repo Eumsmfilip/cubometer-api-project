@@ -87,14 +87,7 @@ const updateProductDimensions = async (req, res) => {
 
       await product.save();
       res.status(200).json({
-        message: `Product's dimensions updated from: 
-        Length: ${productBeforeUpdate.length}
-        Width: ${productBeforeUpdate.width}
-        Height: ${productBeforeUpdate.height}
-        To: 
-        Length: ${product.length}
-        Width: ${product.width}
-        Height: ${product.height}`,
+        message: `Product's dimensions updated from: ${productBeforeUpdate.length}x${productBeforeUpdate.width}x${productBeforeUpdate.height}cm To: ${product.length}x${product.width}x${product.height}cm`,
       });
     } else {
       return res.status(400).json({ message: "The volume has not changed." });
