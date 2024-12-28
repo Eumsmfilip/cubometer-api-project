@@ -1,8 +1,13 @@
+const { where } = require("sequelize");
 const Product = require("../models/product.model");
 
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.findAll({
+      where: {
+        active: true,
+      },
+    });
     res.status(200).json({ products });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -70,7 +75,9 @@ const updateProductDimensions = async (req, res) => {
       product.height = height;
 
       product.save();
-      res.status(200).json({ message: "Product's dimension saved successfully." });
+      res
+        .status(200)
+        .json({ message: "Product's dimension saved successfully." });
     }
 
     if (currentVolume !== newVolume) {
