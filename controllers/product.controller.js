@@ -8,9 +8,9 @@ const getProducts = async (req, res) => {
         active: true,
       },
     });
-    res.status(200).json({ products });
+    return res.status(200).json({ products });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -22,9 +22,9 @@ const getProductById = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-    res.status(200).json({ product });
+    return res.status(200).json({ product });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -39,18 +39,49 @@ const getProductByGtin = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-    res.status(200).json({ product });
+    return res.status(200).json({ product });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
 const createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
-    res.status(201).json({ product });
+    const { gtin13, name } = req.body;
+
+    const [uniqueGtin, uniqueName] = await Promise.all([
+      Product.findOne({
+        where: {
+          gtin13: gtin13,
+        },
+      }),
+      Product.findOne({
+        where: {
+          name: name,
+        },
+      }),
+    ]);
+
+    if (!uniqueGtin && !uniqueName) {
+      const product = await Product.create(req.body);
+      return res.status(201).json({ product });
+    } else if (uniqueGtin && uniqueName) {
+      return res
+        .status(400)
+        .json({
+          message: `Both ${gtin13} and "${name}" are already registered.`,
+        });
+    } else if (uniqueGtin) {
+      return res
+        .status(400)
+        .json({ message: `${gtin13} is already registered.` });
+    } else {
+      return res
+        .status(400)
+        .json({ message: `"${name}" is already registered.` });
+    }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -66,9 +97,9 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found." });
     }
     const updatedProduct = await product.update(req.body);
-    res.status(200).json({ updatedProduct });
+    return res.status(200).json({ updatedProduct });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -101,7 +132,7 @@ const updateProductDimensions = async (req, res) => {
       product.height = height;
 
       product.save();
-      res
+      return res
         .status(200)
         .json({ message: "Product's dimension saved successfully." });
     }
@@ -112,14 +143,14 @@ const updateProductDimensions = async (req, res) => {
       product.height = height;
 
       await product.save();
-      res.status(200).json({
+      return res.status(200).json({
         message: `Product's dimensions updated from: ${productBeforeUpdate.length}x${productBeforeUpdate.width}x${productBeforeUpdate.height}cm To: ${product.length}x${product.width}x${product.height}cm`,
       });
     } else {
       return res.status(400).json({ message: "The volume has not changed." });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -132,9 +163,9 @@ const deleteProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found." });
     }
     await product.destroy();
-    res.status(200).json({ message: "Product deleted." });
+    return res.status(200).json({ message: "Product deleted." });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -156,10 +187,10 @@ const inactivateProduct = async (req, res) => {
     }
     product.active = false;
     await product.save();
-    res.status(200).json({ message: "Product inactivated." });
-    console.log(product.active)
+    return res.status(200).json({ message: "Product inactivated." });
+    console.log(product.active);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
