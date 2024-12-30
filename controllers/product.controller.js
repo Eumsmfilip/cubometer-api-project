@@ -68,17 +68,32 @@ const createProduct = async (req, res) => {
         .status(201)
         .json({ message: "Product created successfully!", product });
     } else if (uniqueGtin && uniqueName) {
+      const productRegistered = await Product.findOne({
+        where: {
+          gtin13: gtin13,
+        },
+      });
       return res.status(400).json({
-        message: `Both ${gtin13} and "${name}" are already registered.`,
+        message: `Both GTIN: ${gtin13}, and name: ${name}, are already registered in the product: ${productRegistered.name}.`,
       });
     } else if (uniqueGtin) {
-      return res
-        .status(400)
-        .json({ message: `${gtin13} is already registered.` });
+      const productRegistered = await Product.findOne({
+        where: {
+          gtin13: gtin13,
+        },
+      });
+      return res.status(400).json({
+        message: `The GTIN: ${gtin13}, is already registered in the product: ${productRegistered.name}.`,
+      });
     } else {
-      return res
-        .status(400)
-        .json({ message: `"${name}" is already registered.` });
+      const productRegistered = await Product.findOne({
+        where: {
+          name: name,
+        },
+      });
+      return res.status(400).json({
+        message: `The name: ${name}, is already registered in the product: ${productRegistered.name}.`,
+      });
     }
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -118,17 +133,36 @@ const updateProduct = async (req, res) => {
     ]);
 
     if (uniqueGtin && uniqueName) {
+      const productRegistered = await Product.findOne({
+        where: {
+          gtin13: gtin13,
+        },
+      });
       return res.status(400).json({
-        message: `Both ${newGtin13} and "${name}" are already registered.`,
+        message: `Both GTIN: ${gtin13}, and name: ${name}, are already registered in the product: ${productRegistered.name}.`,
       });
     } else if (uniqueGtin) {
+      const productRegistered = await Product.findOne({
+        where: {
+          gtin13: gtin13,
+        },
+      });
       return res
         .status(400)
-        .json({ message: `${newGtin13} is already registered.` });
+        .json({
+          message: `The GTIN: ${newGtin13}, is already registered in the product: ${productRegistered.name}.`,
+        });
     } else if (uniqueName) {
+      const productRegistered = await Product.findOne({
+        where: {
+          gtin13: gtin13,
+        },
+      });
       return res
         .status(400)
-        .json({ message: `"${name}" is already registered.` });
+        .json({
+          message: `The name: ${name}, is already registered in the product: ${productRegistered.name}.`,
+        });
     }
 
     const updatedProduct = await product.update(req.body);
@@ -178,9 +212,7 @@ const updateProductDimensions = async (req, res) => {
       product.height = height;
 
       await product.save();
-      return res
-      .status(200)
-      .json({
+      return res.status(200).json({
         message: `Product's dimensions updated from: ${productBeforeUpdate.length}x${productBeforeUpdate.width}x${productBeforeUpdate.height}cm To: ${product.length}x${product.width}x${product.height}cm`,
       });
     } else {
