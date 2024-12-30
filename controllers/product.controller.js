@@ -1,4 +1,4 @@
-const { where } = require("sequelize");
+const { where, Sequelize } = require("sequelize");
 const Product = require("../models/product.model");
 
 const getProducts = async (req, res) => {
@@ -64,13 +64,13 @@ const createProduct = async (req, res) => {
 
     if (!uniqueGtin && !uniqueName) {
       const product = await Product.create(req.body);
-      return res.status(201).json({ product });
-    } else if (uniqueGtin && uniqueName) {
       return res
-        .status(400)
-        .json({
-          message: `Both ${gtin13} and "${name}" are already registered.`,
-        });
+        .status(201)
+        .json({ message: "Product created successfully!", product });
+    } else if (uniqueGtin && uniqueName) {
+      return res.status(400).json({
+        message: `Both ${gtin13} and "${name}" are already registered.`,
+      });
     } else if (uniqueGtin) {
       return res
         .status(400)
@@ -89,13 +89,48 @@ const updateProduct = async (req, res) => {
   try {
     const { gtin13 } = req.params;
     const product = await Product.findOne({
-      where: {
-        gtin13: gtin13,
-      },
+      where: { gtin13 },
     });
+
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
+
+    const { name, gtin13: newGtin13 } = req.body;
+
+    const uniqueGtinPromise =
+      newGtin13 && newGtin13 !== gtin13
+        ? Product.findOne({
+            where: { gtin13: newGtin13, id: { [Sequelize.Op.ne]: product.id } },
+          })
+        : null;
+
+    const uniqueNamePromise =
+      name && name !== product.name
+        ? Product.findOne({
+            where: { name, id: { [Sequelize.Op.ne]: product.id } },
+          })
+        : null;
+
+    const [uniqueGtin, uniqueName] = await Promise.all([
+      uniqueGtinPromise,
+      uniqueNamePromise,
+    ]);
+
+    if (uniqueGtin && uniqueName) {
+      return res.status(400).json({
+        message: `Both ${newGtin13} and "${name}" are already registered.`,
+      });
+    } else if (uniqueGtin) {
+      return res
+        .status(400)
+        .json({ message: `${newGtin13} is already registered.` });
+    } else if (uniqueName) {
+      return res
+        .status(400)
+        .json({ message: `"${name}" is already registered.` });
+    }
+
     const updatedProduct = await product.update(req.body);
     return res.status(200).json({ updatedProduct });
   } catch (error) {
@@ -143,7 +178,9 @@ const updateProductDimensions = async (req, res) => {
       product.height = height;
 
       await product.save();
-      return res.status(200).json({
+      return res
+      .status(200)
+      .json({
         message: `Product's dimensions updated from: ${productBeforeUpdate.length}x${productBeforeUpdate.width}x${productBeforeUpdate.height}cm To: ${product.length}x${product.width}x${product.height}cm`,
       });
     } else {
@@ -188,7 +225,6 @@ const inactivateProduct = async (req, res) => {
     product.active = false;
     await product.save();
     return res.status(200).json({ message: "Product inactivated." });
-    console.log(product.active);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
