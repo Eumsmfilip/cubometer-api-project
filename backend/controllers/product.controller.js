@@ -147,22 +147,18 @@ const updateProduct = async (req, res) => {
           gtin13: gtin13,
         },
       });
-      return res
-        .status(400)
-        .json({
-          message: `The GTIN: ${newGtin13}, is already registered in the product: ${productRegistered.name}.`,
-        });
+      return res.status(400).json({
+        message: `The GTIN: ${newGtin13}, is already registered in the product: ${productRegistered.name}.`,
+      });
     } else if (uniqueName) {
       const productRegistered = await Product.findOne({
         where: {
           gtin13: gtin13,
         },
       });
-      return res
-        .status(400)
-        .json({
-          message: `The name: ${name}, is already registered in the product: ${productRegistered.name}.`,
-        });
+      return res.status(400).json({
+        message: `The name: ${name}, is already registered in the product: ${productRegistered.name}.`,
+      });
     }
 
     const updatedProduct = await product.update(req.body);
