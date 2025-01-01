@@ -2,7 +2,7 @@
   "name": "cubometer-api-project",
   "version": "1.0.0",
   "description": "",
-  "main": "backend/index.js",
+  "main": "index.js",
   "scripts": {
     "serve": "node index.js",
     "dev": "nodemon index.js",
